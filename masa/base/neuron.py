@@ -133,7 +133,7 @@ class BaseNeuron(ABC):
         # Each miner gets a unique identity (UID) in the network for differentiation.
         self.uid = self.metagraph.hotkeys.index(self.wallet.hotkey.ss58_address)
         bt.logging.success(
-            f"🚀 Running neuron on subnet: {self.config.netuid} with uid {self.uid}"
+            f"🚀 Running neuron on subnet: {self.config.netuid} with uid {self.uid} and hotkey {self.wallet.hotkey.ss58_address}"
         )
         self.step = 0
         self._is_initialized = True

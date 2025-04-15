@@ -21,8 +21,12 @@ class TwitterTweetsRequest(MasaProtocolRequest):
         self, synapse: RecentTweetsSynapse
     ) -> Optional[List[ProtocolTwitterTweetResponse]]:
         bt.logging.info(
+            f"Getting {synapse.count} recent tweets for: {synapse.query}"
+        )
+        bt.logging.info(
             f"Getting {synapse.count or self.max_tweets} recent tweets for: {synapse.query}"
         )
+
         try:
             response = self.post(
                 "/data/twitter/tweets/recent",

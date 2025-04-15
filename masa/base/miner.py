@@ -20,6 +20,7 @@ import torch
 import asyncio
 import threading
 import argparse
+import time
 
 import bittensor as bt
 
@@ -149,10 +150,13 @@ class BaseMinerNeuron(BaseNeuron):
     async def run(self):
         """Run the validator forever."""
         while True:
-            current_block = await self.block
-            bt.logging.info(f"Syncing at block {current_block}")
-            await self.sync()
-            self.last_sync_block = current_block
+            # current_block = await self.block
+            # if current_block % 100 == 0:
+            #     bt.logging.info(f"Syncing at block {current_block}")
+            # await self.sync()
+            # self.last_sync_block = current_block
+            time.sleep(300)
+            bt.logging.info("I'm fine, 3Q & U?")
 
     # note, runs every tempo
     async def run_auto_update(self):
