@@ -127,10 +127,18 @@ class BaseMinerNeuron(BaseNeuron):
     def handle_recent_tweets_wrapper(
         self, synapse: RecentTweetsSynapse
     ) -> RecentTweetsSynapse:
-        return handle_recent_tweets(synapse, self.config.twitter.max_tweets_per_request)
+        hotkey = synapse.dendrite.hotkey
+        caller_uid = self.metagraph.hotkeys.index(hotkey)
+
+        return handle_recent_tweets(
+            synapse, self.config.twitter.max_tweets_per_request, caller_uid, self.uid
+        )
 
     def handle_ping_wrapper(self, synapse: PingAxonSynapse) -> PingAxonSynapse:
-        return handle_ping(synapse, self.spec_version)
+        hotkey = synapse.dendrite.hotkey
+        caller_uid = self.metagraph.hotkeys.index(hotkey)
+
+        return handle_ping(synapse, self.spec_version, caller_uid)
 
     async def serve_axon(self):
         """Serve axon to enable external connections."""

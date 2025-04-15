@@ -6,8 +6,12 @@ from masa.types.twitter import ProtocolTwitterTweetResponse
 from masa.synapses import RecentTweetsSynapse
 
 
-def handle_recent_tweets(synapse: RecentTweetsSynapse, max: int) -> RecentTweetsSynapse:
-    synapse.response = TwitterTweetsRequest(max).get_recent_tweets(synapse)
+def handle_recent_tweets(
+    synapse: RecentTweetsSynapse, max: int, caller_uid: int, miner_uid: int
+) -> RecentTweetsSynapse:
+    synapse.response = TwitterTweetsRequest(max).get_recent_tweets(
+        synapse, caller_uid, miner_uid
+    )
     return synapse
 
 
@@ -18,7 +22,7 @@ class TwitterTweetsRequest(MasaProtocolRequest):
         self.max_tweets = max_tweets
 
     def get_recent_tweets(
-        self, synapse: RecentTweetsSynapse
+        self, synapse: RecentTweetsSynapse, caller_uid: int, miner_uid: int
     ) -> Optional[List[ProtocolTwitterTweetResponse]]:
         bt.logging.info(
             f"Getting {synapse.count} recent tweets for: {synapse.query}"
@@ -33,16 +37,20 @@ class TwitterTweetsRequest(MasaProtocolRequest):
                 body={
                     "query": synapse.query,
                     "count": synapse.count or self.max_tweets,
+                    "caller_uid": caller_uid,
+                    "miner_uid": miner_uid,
                 },
                 timeout=synapse.timeout,
             )
             if response.ok:
                 data = self.format(response)
-                bt.logging.success(f"Sending {len(data)} tweets to validator...")
+                bt.logging.success(
+                    f"[monitor] {synapse.query} Sending {len(data)} tweets to validator {caller_uid}..."
+                )
                 return data
             else:
-                bt.logging.error(
-                    f"Recent tweets request failed with status code: {response.status_code}"
-                )
+                f"[monitor] {synapse.query} from {caller_uid} Recent tweets request failed with status code: {response.status_code}"
         except requests.exceptions.RequestException as e:
-            bt.logging.error(f"Recent tweets request failed: {e}")
+            bt.logging.error(
+                f"[monitor] {synapse.query} from {caller_uid} Recent tweets request failed: {e}"
+            )

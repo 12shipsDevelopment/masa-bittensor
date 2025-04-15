@@ -3,11 +3,13 @@ import bittensor as bt
 from masa.synapses import PingAxonSynapse
 
 
-def handle_ping(synapse: PingAxonSynapse, spec_version: int) -> PingAxonSynapse:
+def handle_ping(
+    synapse: PingAxonSynapse, spec_version: int, caller_uid: int
+) -> PingAxonSynapse:
     synapse.is_active = True
     synapse.version = spec_version
     bt.logging.info(
-        f"Validator requesting version: {synapse.sent_from}, Passing back: {synapse.version}"
+        f"Validator requesting version: {synapse.sent_from} {caller_uid}, Passing back: {synapse.version}"
     )
 
     return synapse
